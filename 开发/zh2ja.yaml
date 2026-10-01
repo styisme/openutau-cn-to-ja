@@ -1,0 +1,23 @@
+# ChineseToJapanesePhonemizer 配置文件
+# 把这个文件放在 OpenUtau\Plugins\ 或音源目录下即可生效
+
+nasal_mode: short     # none / short / full
+nasal_ms: 120         # short 模式下「ん」占音符末尾多少毫秒
+
+disable_vcv: false
+disable_light_tone: false
+disable_tone_timing: false
+disable_double_char: false
+
+# 自定义完整拼音映射（可选）
+# full_pinyin:
+#   hua: [fa]
+#   chi: [chi]
+
+# 多音字修正（可选）
+# polyphones:
+#   "chang da": "zhang da"
+
+# 别名覆盖（可选）
+# alias_overrides:
+#   "ん": ["ん -", "n -", "n"]
