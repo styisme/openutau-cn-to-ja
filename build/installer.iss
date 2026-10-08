@@ -1,14 +1,16 @@
 ; =====================================================================
 ; ChineseToJapanesePhonemizer - Inno Setup 安装脚本
-; 版本：v2.1.7
 ; 用途：把 MyZHtoJAPlugin.dll 安装到 OpenUtau 的 Plugins 目录
 ;       安装完成后可选自动启动 OpenUtau
 ; =====================================================================
 
 #define MyAppName "ChineseToJapanesePhonemizer"
-#define MyAppVersion "2.1.7"
-#define MyAppPublisher "Deepseek"
-#define MyAppURL "https://github.com/X-starRelight/openutau-cn-to-ja"
+#define MyAppPublisher "styisme"
+#define MyAppURL "https://github.com/styisme/openutau-cn-to-ja"
+
+#ifndef MyAppVersion
+  #define MyAppVersion "0.0.0-dev"
+#endif
 
 [Setup]
 AppId={{8A3F5B21-9D4E-4C7A-B6F2-1E8D3C9A5F70}

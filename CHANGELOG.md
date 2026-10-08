@@ -9,8 +9,18 @@
 > （例如 v2.1.7 按 SemVer 应为 MINOR 递增，即 v2.2.0）。
 > 历史版本与 tag 不重写，自 **v2.2.0** 起严格执行 SemVer 2.0.0。
 > 历史条目在没有确切发布日期时不标注日期。
+> 
+> **`## [Latest] X.Y.Z`**：CI 构建安装包时读取的唯一版本来源。
+>   发新版时把 `[Latest]` 头衔移到新条目上，旧条目改为 `## X.Y.Z`。
+>   两个 `[Latest]` 同时存在时，CI 只取文件中靠上的那一个。
 
-## [Unreleased] 2.2.0
+## [Latest] 2.2.1
+
+### Fixed
+
+- 安装向导显示旧版本号 2.1.7 的问题
+
+## 2.2.0
 
 ### Changed
 
@@ -135,5 +145,5 @@
 
 - 首版：拼音 → 假名
 
-[Unreleased]: https://github.com/X-starRelight/openutau-cn-to-ja/compare/v2.1.7...HEAD
-[2.1.7]: https://github.com/X-starRelight/openutau-cn-to-ja/releases/tag/v2.1.7
+[Unreleased]: https://github.com/styisme/openutau-cn-to-ja/compare/v2.1.7...HEAD
+[2.1.7]: https://github.com/styisme/openutau-cn-to-ja/releases/tag/v2.1.7

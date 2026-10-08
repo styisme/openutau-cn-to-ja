@@ -2,8 +2,8 @@
 
 > 让日语音源唱中文 —— OpenUtau 音素器插件
 
-[![Version](https://img.shields.io/badge/version-2.1.7-blue.svg)](CHANGELOG.md)
-[![CI](https://github.com/X-starRelight/openutau-cn-to-ja/actions/workflows/ci.yml/badge.svg)](https://github.com/X-starRelight/openutau-cn-to-ja/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/badge/version-2.2.1-blue.svg)](CHANGELOG.md)
+[![CI](https://github.com/styisme/openutau-cn-to-ja/actions/workflows/ci.yml/badge.svg)](https://github.com/styisme/openutau-cn-to-ja/actions/workflows/ci.yml)
 [![Platform](https://img.shields.io/badge/platform-Windows%20x64-lightgrey.svg)](#系统要求)
 [![OpenUtau](https://img.shields.io/badge/OpenUtau-v0.1.570%2B-green.svg)](#系统要求)
 [![License](https://img.shields.io/badge/license-MIT-orange.svg)](#许可证)
@@ -48,7 +48,7 @@
 
 ### 方式一：使用安装包（推荐）
 
-1. 从 [Releases](https://github.com/X-starRelight/openutau-cn-to-ja/releases) 下载最新的 `MyZHtoJAPlugin-vX.Y.Z-Setup.exe`
+1. 从 [Releases](https://github.com/styisme/openutau-cn-to-ja/releases) 下载最新的 `MyZHtoJAPlugin-vX.Y.Z-Setup.exe`
 2. **完全关闭 OpenUtau**（任务管理器确认无 OpenUtau.exe 进程）
 3. 双击安装包，按提示下一步
 4. 安装程序会自动探测 OpenUtau 的 `Plugins\\` 目录
@@ -56,7 +56,7 @@
 
 ### 方式二：手动安装
 
-1. 从 [Releases](https://github.com/X-starRelight/openutau-cn-to-ja/releases) 下载插件 DLL（单文件版 `MyZHtoJAPlugin.dll`）
+1. 从 [Releases](https://github.com/styisme/openutau-cn-to-ja/releases) 下载插件 DLL（单文件版 `MyZHtoJAPlugin.dll`）
 2. **完全关闭 OpenUtau**
 3. 复制 DLL 到以下位置之一：
 
@@ -304,7 +304,7 @@ openutau-cn-to-ja/
 └── .github/workflows/ci.yml               # CI：编译 / 测试 / 安装包
 ```
 
-历史 DLL、安装包与 docx 不再入库，改由 [GitHub Releases](https://github.com/X-starRelight/openutau-cn-to-ja/releases) 分发。
+历史 DLL、安装包与 docx 不再入库，改由 [GitHub Releases](https://github.com/styisme/openutau-cn-to-ja/releases) 分发。
 
 ---
 
@@ -323,7 +323,7 @@ dotnet test openutau-cn-to-ja.slnx
 
 脚本会自动检查依赖、执行 `dotnet build -c Release` 并输出编译好的 DLL 路径。需要 .NET 10 SDK。
 
-每次 push / PR，[CI](https://github.com/X-starRelight/openutau-cn-to-ja/actions) 会自动运行编译、测试并打包安装包。
+每次 push / PR，[CI](https://github.com/styisme/openutau-cn-to-ja/actions) 会自动运行编译、测试并打包安装包。
 
 ### 打包安装器
 
@@ -352,20 +352,6 @@ dotnet test openutau-cn-to-ja.slnx
 ## 📄 许可证
 
 本项目使用 [MIT License](LICENSE)。
-
-Copyright (c) 2026 Deepseek
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
 
 ---
 

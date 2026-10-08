@@ -69,12 +69,44 @@ jobs:
       - name: Build installer (Inno Setup)
         shell: pwsh
         run: |
+          $cl = Join-Path (Get-Location).Path "CHANGELOG.md"
+          if (-not (Test-Path $cl)) {
+              Write-Error "找不到 CHANGELOG.md: $cl"
+              exit 1
+          }
+
+          $line = Get-Content -Path $cl -Encoding UTF8 |
+                  Where-Object { $_ -match '^\s*##\s*\[Latest\]\s+v?(\S+)' } |
+                  Select-Object -First 1
+
+          if (-not $line) {
+              Write-Error "未在 CHANGELOG.md 中找到 '## [Latest]' 开头的行"
+              exit 1
+          }
+
+          if ($line -notmatch '^\s*##\s*\[Latest\]\s+v?(\S+)') {
+              Write-Error "无法从行中解析出版本号: $line"
+              exit 1
+          }
+          $version = $Matches[1]
+
+          # 简单校验 SemVer 格式（可留可去）
+          if ($version -notmatch '^\d+\.\d+\.\d+') {
+              Write-Error "解析出的版本号格式可疑: $version"
+              exit 1
+          }
+
+          Write-Host "Version: $version"
+
           $candidates = @(
             "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
             "$env:ProgramFiles\Inno Setup 6\ISCC.exe"
           )
           $iscc = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
-          if (-not $iscc) { throw "ISCC.exe not found - is Inno Setup 6 installed on the runner?" }
+          if (-not $iscc) {
+            Write-Error "未找到 Inno Setup 6 (ISCC.exe)"
+            exit 1
+          }
 
           $innoDir = Split-Path $iscc
           $isl = Join-Path $innoDir "Languages\ChineseSimplified.isl"
@@ -86,7 +118,7 @@ jobs:
               -OutFile $isl
           }
 
-          & $iscc build\installer.iss
+          & $iscc "/DMyAppVersion=$version" build\installer.iss
           if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
 
       - name: Upload installer artifact
