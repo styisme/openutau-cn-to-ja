@@ -2,8 +2,8 @@
 
 > 让日语音源唱中文 —— OpenUtau 音素器插件
 
-[![Version](https://img.shields.io/badge/version-2.2.0-blue.svg)](CHANGELOG.md)
-[![CI](https://github.com/styisme/openutau-cn-to-ja/actions/workflows/ci.yml/badge.svg)](https://github.com/styisme/openutau-cn-to-ja/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/badge/version-2.1.7-blue.svg)](CHANGELOG.md)
+[![CI](https://github.com/X-starRelight/openutau-cn-to-ja/actions/workflows/ci.yml/badge.svg)](https://github.com/X-starRelight/openutau-cn-to-ja/actions/workflows/ci.yml)
 [![Platform](https://img.shields.io/badge/platform-Windows%20x64-lightgrey.svg)](#系统要求)
 [![OpenUtau](https://img.shields.io/badge/OpenUtau-v0.1.570%2B-green.svg)](#系统要求)
 [![License](https://img.shields.io/badge/license-MIT-orange.svg)](#许可证)
@@ -24,7 +24,7 @@
 * **多音节输入** — 一个音符里用空格分隔多个拼音，自动分配时值
 * **中文韵律支持** — 一/不变调、轻声压缩、叠字缩短、声调时长微调
 * **多音字修正** — n-gram 上下文匹配，支持用户确认弹窗
-* **鼻音韵尾三档处理** — none / short / full，解决弱音���ん过长问题
+* **鼻音韵尾三档处理** — none / short / full，解决弱音源ん过长问题
 * **通配符 过渡音素** — v2.1.7 新增，改善 Defoko 等 CV 音源的连音效果
 * **YAML 配置** — 用户可自定义完整拼音映射、多音字规则、别名覆盖
 * **标点/数字自动处理** — 标点转空格，数字转拼音（2024 → er ling er si），儿化音合并
@@ -48,7 +48,7 @@
 
 ### 方式一：使用安装包（推荐）
 
-1. 从 [Releases](https://github.com/styisme/openutau-cn-to-ja/releases) 下载最新的 `MyZHtoJAPlugin-vX.Y.Z-Setup.exe`
+1. 从 [Releases](https://github.com/X-starRelight/openutau-cn-to-ja/releases) 下载最新的 `MyZHtoJAPlugin-vX.Y.Z-Setup.exe`
 2. **完全关闭 OpenUtau**（任务管理器确认无 OpenUtau.exe 进程）
 3. 双击安装包，按提示下一步
 4. 安装程序会自动探测 OpenUtau 的 `Plugins\\` 目录
@@ -56,7 +56,7 @@
 
 ### 方式二：手动安装
 
-1. 从 [Releases](https://github.com/styisme/openutau-cn-to-ja/releases) 下载插件 DLL（单文件版 `MyZHtoJAPlugin.dll`）
+1. 从 [Releases](https://github.com/X-starRelight/openutau-cn-to-ja/releases) 下载插件 DLL（单文件版 `MyZHtoJAPlugin.dll`）
 2. **完全关闭 OpenUtau**
 3. 复制 DLL 到以下位置之一：
 
@@ -82,7 +82,7 @@
 
 在钢琴卷帘中双击音符，直接输入汉字：
 
-音符1: 你
+音��1: 你
 音符2: 好
 音符3: 世
 音符4: 界
@@ -127,7 +127,7 @@
 
 ### 6. 通配符 * 过渡音素（v2.1.7 新增）
 
-对于 **Defoko 等纯 CV 音源**，音节之间没有 VCV / CVVC 过渡采样，直接硬拼两个 CV 会显得很生硬。v2.1.7 加入了通配符 * 支持，自动尝试查找音源中的过渡采样。
+对于 **Defoko 等纯 CV 音源**，音节之间没有 VCV / CVVC 过渡采样，直接硬拼两个 CV 会显得很生硬。v2.1.7 加入了通配符 * 支持，自动尝试查找音源中的过渡采样（如 ざ*、* お、* あ）。
 
 效果示例：
 
@@ -136,7 +136,7 @@
 | zao（早） | ざ お | **ざ* お** |
 | an（安） | あ ん | **あ* ん** |
 
-如果音源里没有对应的 * 采样，插件会自动回退到普通 CV，不会报错。如果觉得某些音源的 * 采样效果不好，可以在 zh2ja.yaml 里设置 use_wildcard: false 来关闭此功能。
+如果音源里没有对应的 * 采样，插件会自动回退到普通 CV，不会报错。如果觉得某些音源的 * 采样效果不好，可以在 zh2ja.yaml 里设置 use_wildcard: false 关闭。
 
 ### 7. 渲染
 
@@ -215,7 +215,7 @@ OpenUtau 的**缓存机制**。必须：
 <details>
 <summary><b>Q3：渲染时报 Oto not found for ゃ？</b></summary>
 
-**正常现象**。ゃ是拗音（みゃ / きゃ / しゃ）的小写后缀，不是独立 mora。OpenUtau 会做边界探测，把みゃ拆成み和ゃ尝试查找 OTO。**警告可忽略**，渲染不会受影响。
+**正常现象**。ゃ是拗音（みゃ / きゃ / しゃ）的小写后缀，不是独立 mora。OpenUtau 会做边界探测，把みゃ拆成み和ゃ尝试查找 OTO。**警告可忽略，声音正常播放。**
 
 </details>
 
@@ -233,7 +233,7 @@ OpenUtau 的**缓存机制**。必须：
 <summary><b>Q5：某些字发音很奇怪？</b></summary>
 
 * 换读法：用拼音代替汉字
-* 音素提示：右键音符 → 音素提示 → 手动指定发音
+* ���素提示：右键音符 → 音素提示 → 手动指定发音
 * 换音源测试
 * 反馈问题：把出问题的字和音源型号反馈给作者
 
@@ -253,7 +253,7 @@ OpenUtau 的**缓存机制**。必须：
 <details>
 <summary><b>Q7：通配符 * 过渡音素是什么？</b></summary>
 
-v2.1.7 新增功能。对于 Defoko 等纯 CV 音源，插件会自动优先查找带 * 的过渡采样（如 ざ*、* お），让音节之间衔接更自然。如果音源没有这些采样，会自动回退到普通 CV，完全无感。可在 zh2ja.yaml 关闭此功能。
+v2.1.7 新增功能。对于 Defoko 等纯 CV 音源，插件会自动优先查找带 * 的过渡采样（如 ざ*、* お），让音节之间衔接更自然。如果音源没有这些采样，会自动回退。可通过 use_wildcard: false 关闭。
 
 </details>
 
@@ -304,7 +304,7 @@ openutau-cn-to-ja/
 └── .github/workflows/ci.yml               # CI：编译 / 测试 / 安装包
 ```
 
-历史 DLL、安装包与 docx 不再入库，改由 [GitHub Releases](https://github.com/styisme/openutau-cn-to-ja/releases) 分发。
+历史 DLL、安装包与 docx 不再入库，改由 [GitHub Releases](https://github.com/X-starRelight/openutau-cn-to-ja/releases) 分发。
 
 ---
 
@@ -323,7 +323,7 @@ dotnet test openutau-cn-to-ja.slnx
 
 脚本会自动检查依赖、执行 `dotnet build -c Release` 并输出编译好的 DLL 路径。需要 .NET 10 SDK。
 
-每次 push / PR，[CI](https://github.com/styisme/openutau-cn-to-ja/actions) 会自动运行编译、测试并打包安装包。
+每次 push / PR，[CI](https://github.com/X-starRelight/openutau-cn-to-ja/actions) 会自动运行编译、测试并打包安装包。
 
 ### 打包安装器
 

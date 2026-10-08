@@ -135,5 +135,5 @@
 
 - 首版：拼音 → 假名
 
-[Unreleased]: https://github.com/styisme/openutau-cn-to-ja/compare/v2.1.7...HEAD
-[2.1.7]: https://github.com/styisme/openutau-cn-to-ja/releases/tag/v2.1.7
+[Unreleased]: https://github.com/X-starRelight/openutau-cn-to-ja/compare/v2.1.7...HEAD
+[2.1.7]: https://github.com/X-starRelight/openutau-cn-to-ja/releases/tag/v2.1.7
