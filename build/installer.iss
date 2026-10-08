@@ -1,14 +1,14 @@
 ; =====================================================================
 ; ChineseToJapanesePhonemizer - Inno Setup 安装脚本
-; 版本：v2.1.7
+; 版本：v2.2.0
 ; 用途：把 MyZHtoJAPlugin.dll 安装到 OpenUtau 的 Plugins 目录
 ;       安装完成后可选自动启动 OpenUtau
 ; =====================================================================
 
 #define MyAppName "ChineseToJapanesePhonemizer"
-#define MyAppVersion "2.1.7"
+#define MyAppVersion "2.2.0"
 #define MyAppPublisher "Deepseek"
-#define MyAppURL "https://github.com/X-starRelight/openutau-cn-to-ja"
+#define MyAppURL "https://github.com/styisme/openutau-cn-to-ja"
 
 [Setup]
 AppId={{8A3F5B21-9D4E-4C7A-B6F2-1E8D3C9A5F70}
@@ -80,12 +80,12 @@ begin
     exit;
   end;
 
-  // 3. 找不到就默认给一个
+  // 3. 有时 OpenUtau 装在便携版位置，回退到标准路径
   Result := ExpandConstant('{userdocs}\OpenUtau\Plugins');
 end;
 
 // ---------------------------------------------------------------
-// 探测 OpenUtau.exe 的常见位置
+// 探测 OpenUtau.exe 的路径
 // ---------------------------------------------------------------
 function FindOpenUtau(): String;
 var
@@ -118,7 +118,7 @@ begin
 end;
 
 // ---------------------------------------------------------------
-// 安装前检查 + 探测 OpenUtau
+// 探测 OpenUtau + 检查是否运行中
 // ---------------------------------------------------------------
 function InitializeSetup(): Boolean;
 var
@@ -130,15 +130,15 @@ begin
   OpenUtauPath := FindOpenUtau();
   OpenUtauFound := (OpenUtauPath <> '');
 
-  // 如果 OpenUtau 正在运行，友好提醒
+  // 警告：已检测到 OpenUtau 运行中，建议关闭
   if Exec('cmd.exe', '/C tasklist /FI "IMAGENAME eq OpenUtau.exe" /NH | find /I "OpenUtau.exe"',
-          '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+         '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
   begin
     if ResultCode = 0 then
     begin
       if MsgBox('检测到 OpenUtau 正在运行。' + #13#10 + #13#10 +
-                '为了避免 DLL 被锁定，建议先完全关闭 OpenUtau 再安装。' + #13#10 + #13#10 +
-                '是否继续安装？',
+                '建议先关闭 OpenUtau，避免 DLL 被锁定。如强行继续，可能导致安装失败。' + #13#10 + #13#10 +
+                '现在关闭 OpenUtau 吗？',
                 mbConfirmation, MB_YESNO) = IDNO then
       begin
         Result := False;
@@ -149,7 +149,7 @@ begin
 end;
 
 // ---------------------------------------------------------------
-// 供 [Run] 段调用：返回 OpenUtau.exe 完整路径
+// 注意 [Run] 中显示的 OpenUtau 启动选项
 // ---------------------------------------------------------------
 function GetOpenUtauPath(Param: String): String;
 begin
@@ -157,7 +157,7 @@ begin
 end;
 
 // ---------------------------------------------------------------
-// 供 [Run] 段调用：是否找到 OpenUtau
+// 注意 [Run] 中显示的"查看说明"选项
 // ---------------------------------------------------------------
 function HasOpenUtau(): Boolean;
 begin
@@ -174,13 +174,17 @@ begin
   if CurStep = ssPostInstall then
   begin
     Msg := '安装完成！' + #13#10 + #13#10 +
-           '请启动 OpenUtau，在音轨设置里把音素器切换为 "ZH to JA"。' + #13#10 + #13#10 +
-           '提示：更换 DLL 或修改 zh2ja.yaml 后，记得清空 <文档目录>\OpenUtau\Cache\ 再渲染。';
+           '接下来如何使用？' + #13#10 + #13#10 +
+           '1. 启动 OpenUtau' + #13#10 +
+           '2. 在音轨设置里切换音素器为 "ZH to JA"' + #13#10 +
+           '3. 在钢琴卷帘中输入中文，点击"渲染"' + #13#10 + #13#10 +
+           '更详细的使用教程见 zh2ja.yaml 的注释，或查看文档 <安装目录>\OpenUtau\Plugins\使用说明.md。' + #13#10 + #13#10 +
+           '如有问题，请访问项目主页了解更多信息。';
 
     if not OpenUtauFound then
     begin
       Msg := Msg + #13#10 + #13#10 +
-             '（未自动找到 OpenUtau.exe，请手动启动 OpenUtau）';
+             '（提示：未找到 OpenUtau，请确保已正确安装）';
     end;
 
     MsgBox(Msg, mbInformation, MB_OK);
