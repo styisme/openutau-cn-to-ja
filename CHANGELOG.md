@@ -14,7 +14,14 @@
 >   发新版时把 `[Latest]` 头衔移到新条目上，旧条目改为 `## X.Y.Z`。
 >   两个 `[Latest]` 同时存在时，CI 只取文件中靠上的那一个。
 
-## [Latest] 2.2.1
+## [Latest] 2.2.2
+
+### Fixed
+
+- `LightToneChars` 误把感叹词（啊/呀/哦/咯/嘛/啦/哎/哇）当作轻声处理，
+  导致「哦」等字无声。现在只保留语法助词（的/了/着/呢/吧/吗）。
+
+## 2.2.1
 
 ### Fixed
 
@@ -145,5 +152,8 @@
 
 - 首版：拼音 → 假名
 
-[Unreleased]: https://github.com/styisme/openutau-cn-to-ja/compare/v2.1.7...HEAD
+[Unreleased]: https://github.com/styisme/openutau-cn-to-ja/compare/v2.2.2...HEAD
+[2.2.2]: https://github.com/styisme/openutau-cn-to-ja/releases/tag/v2.2.2
+[2.2.1]: https://github.com/styisme/openutau-cn-to-ja/releases/tag/v2.2.1
+[2.2.0]: https://github.com/styisme/openutau-cn-to-ja/releases/tag/v2.2.0
 [2.1.7]: https://github.com/styisme/openutau-cn-to-ja/releases/tag/v2.1.7

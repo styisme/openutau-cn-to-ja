@@ -2,7 +2,7 @@
 
 > 让日语音源唱中文 —— OpenUtau 音素器插件
 
-[![Version](https://img.shields.io/badge/version-2.2.1-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.2.2-blue.svg)](CHANGELOG.md)
 [![CI](https://github.com/styisme/openutau-cn-to-ja/actions/workflows/ci.yml/badge.svg)](https://github.com/styisme/openutau-cn-to-ja/actions/workflows/ci.yml)
 [![Platform](https://img.shields.io/badge/platform-Windows%20x64-lightgrey.svg)](#系统要求)
 [![OpenUtau](https://img.shields.io/badge/OpenUtau-v0.1.570%2B-green.svg)](#系统要求)
@@ -265,6 +265,9 @@ v2.1.7 新增功能。对于 Defoko 等纯 CV 音源，插件会自动优先查�
 
 | 版本 | 主要改动 |
 |---|---|
+| **v2.2.2** | 修复 LightToneChars 误把感叹词当轻声，导致「哦」等字无声 |
+| v2.2.1 | 修复安装向导版本号未同步 |
+| v2.2.0 | 项目结构重组（src/build/docs/tests）；引入单元测试与 CI；修复 yuan 无声 |
 | **v2.1.7** | 加入通配符 * 过渡音素支持（Defoko 等 CV 音源），可通过 use_wildcard 开关控制 |
 | v2.1.6 | 修复 nasal_mode=none 不生效 bug；short 改用 KOtoJA 风格末尾固定毫秒；默认 short；新增 nasal_ms 配置；提供 Inno Setup 安装包 |
 | v2.1.5 | nasal_mode 三档开关（none / short / full） |
@@ -345,6 +348,7 @@ dotnet test openutau-cn-to-ja.slnx
 * [ENtoJAPhonemizer](https://github.com/stakira/OpenUtau) — 架构参考（作者 TUBS、Cadlaxa）
 * [KOtoJAPhonemizer](https://github.com/stakira/OpenUtau) — 鼻音 position 处理参考（作者 Lotte V）
 * **立葵_Tachi** — v2.1.7 通配符 * 过渡音素的建议
+* **X-starRelight** — v2.2.0 项目结构重组、单元测试与 CI
 * 所有测试和反馈的用户
 
 ---
