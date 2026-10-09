@@ -2,6 +2,9 @@
 // Zh2JaCore - 纯逻辑与数据表
 // 从 ChineseToJapanesePhonemizer 抽出，不依赖 OpenUtau 运行时，
 // 供单元测试（tests/ChineseToJapanesePhonemizer.Tests）直接调用。
+//
+// v2.2.2 修复：LightToneChars 移除感叹词（啊呀哦咯嘛啦哎哇），
+//              修复「哦」等字被误判为轻声导致无声的问题。
 // =====================================================================
 
 using System;
@@ -95,8 +98,11 @@ namespace OpenUtau.Plugin.Builtin {
             { "y", "y" }, { "w", "w" }
         };
 
+        // 【v2.2.2 修复】仅保留真正的语法助词（无声调、应轻声化）。
+        // 感叹词「啊呀哦咯嘛啦哎哇」有实际声调，不应被当作轻声处理，
+        // 否则会出现「哦」等字无声的 bug。
         internal static readonly HashSet<string> LightToneChars = new() {
-            "的", "了", "着", "呢", "吧", "吗", "啊", "呀", "哦", "咯", "嘛", "啦", "哎", "哇",
+            "的", "了", "着", "呢", "吧", "吗",
         };
 
         internal static readonly Dictionary<string, string[]> DefaultFullPinyinMap = new() {
@@ -663,4 +669,3 @@ namespace OpenUtau.Plugin.Builtin {
 
     }
 }
-
