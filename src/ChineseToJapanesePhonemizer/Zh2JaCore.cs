@@ -1,75 +1,64 @@
 // =====================================================================
 // Zh2JaCore - 纯逻辑与数据表
-// 从 ChineseToJapanesePhonemizer 抽出，不依赖 OpenUtau 运行时，
-// 供单元测试（tests/ChineseToJapanesePhonemizer.Tests）直接调用。
+// 从 ChineseToJapanesePhonemizer 抽出，不依赖 OpenUtau 运行时。
 //
-// v2.2.2 修复：LightToneChars 移除感叹词（啊呀哦咯嘛啦哎哇），
-//              修复「哦」等字被误判为轻声导致无声的问题。
+// v2.2.2 修复：LightToneChars 移除感叹词，修复「哦」无声
+// v2.3.0 新增：数字读法扩展（日期/时间/小数/百分比/千位逗号）
 // =====================================================================
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace OpenUtau.Plugin.Builtin {
 
     internal static class Zh2JaCore {
 
         // ------------------------------------------------------------
+        // 数字读法：日期 / 时间识别正则
+        // ------------------------------------------------------------
+        private static readonly Regex DateRegex = new Regex(
+            @"\d{4}[-/]\d{1,2}[-/]\d{1,2}", RegexOptions.Compiled);
+        private static readonly Regex TimeRegex = new Regex(
+            @"\d{1,2}:\d{2}(?::\d{2})?", RegexOptions.Compiled);
+
+        // ------------------------------------------------------------
         // 数据表
         // ------------------------------------------------------------
-        // =============================================================
-        // Romaji → Kana 映射表（内置）
-        // =============================================================
         internal static readonly Dictionary<string, string> RomajiToKana = new() {
             { "a", "あ" }, { "i", "い" }, { "u", "う" }, { "e", "え" }, { "o", "お" },
             { "n", "ん" }, { "N", "ん" },
-
             { "ba", "ば" }, { "bi", "び" }, { "bu", "ぶ" }, { "be", "べ" }, { "bo", "ぼ" },
             { "bya", "びゃ" }, { "byu", "びゅ" }, { "byo", "びょ" },
-
             { "pa", "ぱ" }, { "pi", "ぴ" }, { "pu", "ぷ" }, { "pe", "ぺ" }, { "po", "ぽ" },
             { "pya", "ぴゃ" }, { "pyu", "ぴゅ" }, { "pyo", "ぴょ" },
-
             { "ma", "ま" }, { "mi", "み" }, { "mu", "む" }, { "me", "め" }, { "mo", "も" },
             { "mya", "みゃ" }, { "myu", "みゅ" }, { "myo", "みょ" },
-
             { "fa", "ふぁ" }, { "fi", "ふぃ" }, { "fu", "ふ" }, { "fe", "ふぇ" }, { "fo", "ふぉ" },
             { "ha", "は" }, { "hi", "ひ" }, { "hu", "ふ" }, { "he", "へ" }, { "ho", "ほ" },
             { "hya", "ひゃ" }, { "hyu", "ひゅ" }, { "hyo", "ひょ" },
-
             { "da", "だ" }, { "di", "でぃ" }, { "du", "どぅ" }, { "de", "で" }, { "do", "ど" },
             { "dya", "じゃ" }, { "dyu", "じゅ" }, { "dyo", "じょ" },
-
             { "ta", "た" }, { "ti", "てぃ" }, { "tu", "とぅ" }, { "te", "て" }, { "to", "と" },
             { "tya", "ちゃ" }, { "tyu", "ちゅ" }, { "tyo", "ちょ" },
-
             { "na", "な" }, { "ni", "に" }, { "nu", "ぬ" }, { "ne", "ね" }, { "no", "の" },
             { "nya", "にゃ" }, { "nyu", "にゅ" }, { "nyo", "にょ" },
-
             { "ra", "ら" }, { "ri", "り" }, { "ru", "る" }, { "re", "れ" }, { "ro", "ろ" },
             { "rya", "りゃ" }, { "ryu", "りゅ" }, { "ryo", "りょ" },
-
             { "ga", "が" }, { "gi", "ぎ" }, { "gu", "ぐ" }, { "ge", "げ" }, { "go", "ご" },
             { "gya", "ぎゃ" }, { "gyu", "ぎゅ" }, { "gyo", "ぎょ" },
-
             { "ka", "か" }, { "ki", "き" }, { "ku", "く" }, { "ke", "け" }, { "ko", "こ" },
             { "kya", "きゃ" }, { "kyu", "きゅ" }, { "kyo", "きょ" },
-
             { "za", "ざ" }, { "zi", "じ" }, { "zu", "ず" }, { "ze", "ぜ" }, { "zo", "ぞ" },
             { "ja", "じゃ" }, { "ji", "じ" }, { "ju", "じゅ" }, { "je", "じぇ" }, { "jo", "じょ" },
-
             { "sa", "さ" }, { "si", "す" }, { "su", "す" }, { "se", "せ" }, { "so", "そ" },
             { "sha", "しゃ" }, { "shi", "し" }, { "shu", "しゅ" }, { "she", "しぇ" }, { "sho", "しょ" },
-
             { "tsa", "つぁ" }, { "tsi", "つぃ" }, { "tsu", "つ" }, { "tse", "つぇ" }, { "tso", "つぉ" },
             { "cha", "ちゃ" }, { "chi", "ち" }, { "chu", "ちゅ" }, { "che", "ちぇ" }, { "cho", "ちょ" },
-
             { "ya", "や" }, { "yu", "ゆ" }, { "ye", "いぇ" }, { "yo", "よ" },
-
             { "wa", "わ" }, { "wi", "うぃ" }, { "wu", "う" }, { "we", "うぇ" }, { "wo", "うぉ" },
-
             { "va", "ヴぁ" }, { "vi", "ヴぃ" }, { "vu", "ヴ" }, { "ve", "ヴぇ" }, { "vo", "ヴぉ" },
         };
 
@@ -98,15 +87,12 @@ namespace OpenUtau.Plugin.Builtin {
             { "y", "y" }, { "w", "w" }
         };
 
-        // 【v2.2.2 修复】仅保留真正的语法助词（无声调、应轻声化）。
-        // 感叹词「啊呀哦咯嘛啦哎哇」有实际声调，不应被当作轻声处理，
-        // 否则会出现「哦」等字无声的 bug。
+        // 仅保留真正的语法助词（无声调、应轻声化）
         internal static readonly HashSet<string> LightToneChars = new() {
             "的", "了", "着", "呢", "吧", "吗",
         };
 
         internal static readonly Dictionary<string, string[]> DefaultFullPinyinMap = new() {
-            // 零声母
             { "a",   new[]{"a"} },        { "ai",  new[]{"a", "i"} },
             { "an",  new[]{"a", "n"} },   { "ang", new[]{"a", "n"} },
             { "ao",  new[]{"a", "o"} },   { "o",   new[]{"o"} },
@@ -114,8 +100,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "en",  new[]{"e", "n"} },   { "eng", new[]{"e", "n"} },
             { "er",  new[]{"a"} },        { "i",   new[]{"i"} },
             { "u",   new[]{"u"} },        { "v",   new[]{"yu"} },
-
-            // b
             { "ba",   new[]{"ba"} },          { "bo",   new[]{"bo"} },
             { "bai",  new[]{"ba", "i"} },     { "bei",  new[]{"be", "i"} },
             { "bao",  new[]{"ba", "o"} },     { "ban",  new[]{"ba", "n"} },
@@ -124,8 +108,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "bie",  new[]{"bi", "e"} },     { "biao", new[]{"bya", "o"} },
             { "bian", new[]{"bya", "n"} },    { "bin",  new[]{"bi", "n"} },
             { "bing", new[]{"bi", "n"} },     { "bu",   new[]{"bu"} },
-
-            // p
             { "pa",   new[]{"pa"} },          { "po",   new[]{"po"} },
             { "pai",  new[]{"pa", "i"} },     { "pei",  new[]{"pe", "i"} },
             { "pao",  new[]{"pa", "o"} },     { "pou",  new[]{"po", "o"} },
@@ -135,8 +117,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "piao", new[]{"pya", "o"} },    { "pian", new[]{"pya", "n"} },
             { "pin",  new[]{"pi", "n"} },     { "ping", new[]{"pi", "n"} },
             { "pu",   new[]{"pu"} },
-
-            // m
             { "ma",   new[]{"ma"} },          { "mo",   new[]{"mo"} },
             { "me",   new[]{"me"} },          { "mai",  new[]{"ma", "i"} },
             { "mei",  new[]{"me", "i"} },     { "mao",  new[]{"ma", "o"} },
@@ -147,15 +127,11 @@ namespace OpenUtau.Plugin.Builtin {
             { "miu",  new[]{"myu"} },         { "mian", new[]{"mya", "n"} },
             { "min",  new[]{"mi", "n"} },     { "ming", new[]{"mi", "n"} },
             { "mu",   new[]{"mu"} },
-
-            // f
             { "fa",   new[]{"fa"} },          { "fo",   new[]{"fo"} },
             { "fei",  new[]{"fe", "i"} },     { "fou",  new[]{"fo", "o"} },
             { "fan",  new[]{"fa", "n"} },     { "fen",  new[]{"fe", "n"} },
             { "fang", new[]{"fa", "n"} },     { "feng", new[]{"fe", "n"} },
             { "fu",   new[]{"fu"} },
-
-            // d
             { "da",   new[]{"da"} },          { "de",   new[]{"de"} },
             { "dai",  new[]{"da", "i"} },     { "dei",  new[]{"de", "i"} },
             { "dao",  new[]{"da", "o"} },     { "dou",  new[]{"do", "o"} },
@@ -168,8 +144,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "du",   new[]{"du"} },          { "duo",  new[]{"du", "o"} },
             { "dui",  new[]{"du", "i"} },     { "duan", new[]{"du", "a", "n"} },
             { "dun",  new[]{"du", "n"} },
-
-            // t
             { "ta",   new[]{"ta"} },          { "te",   new[]{"te"} },
             { "tai",  new[]{"ta", "i"} },     { "tao",  new[]{"ta", "o"} },
             { "tou",  new[]{"to", "o"} },     { "tan",  new[]{"ta", "n"} },
@@ -180,8 +154,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "tu",   new[]{"tu"} },          { "tuo",  new[]{"tu", "o"} },
             { "tui",  new[]{"tu", "i"} },     { "tuan", new[]{"tu", "a", "n"} },
             { "tun",  new[]{"tu", "n"} },
-
-            // n
             { "na",   new[]{"na"} },          { "ne",   new[]{"ne"} },
             { "nai",  new[]{"na", "i"} },     { "nei",  new[]{"ne", "i"} },
             { "nao",  new[]{"na", "o"} },     { "nou",  new[]{"no", "o"} },
@@ -194,8 +166,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "nong", new[]{"no", "n"} },     { "nu",   new[]{"nu"} },
             { "nuo",  new[]{"nu", "o"} },     { "nuan", new[]{"nu", "a", "n"} },
             { "nv",   new[]{"nyu"} },         { "nve",  new[]{"nyu", "e"} },
-
-            // l → r
             { "la",   new[]{"ra"} },          { "le",   new[]{"re"} },
             { "lai",  new[]{"ra", "i"} },     { "lei",  new[]{"re", "i"} },
             { "lao",  new[]{"ra", "o"} },     { "lou",  new[]{"ro", "o"} },
@@ -209,8 +179,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "luo",  new[]{"ru", "o"} },     { "luan", new[]{"ru", "a", "n"} },
             { "lun",  new[]{"ru", "n"} },     { "lv",   new[]{"ryu"} },
             { "lve",  new[]{"ryu", "e"} },
-
-            // g
             { "ga",   new[]{"ga"} },          { "ge",   new[]{"ge"} },
             { "gai",  new[]{"ga", "i"} },     { "gei",  new[]{"ge", "i"} },
             { "gao",  new[]{"ga", "o"} },     { "gou",  new[]{"go", "o"} },
@@ -221,8 +189,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "guai", new[]{"gu", "a", "i"} },{ "gui",  new[]{"gu", "i"} },
             { "guan", new[]{"gu", "a", "n"} },{ "guang",new[]{"gu", "a", "n"} },
             { "gun",  new[]{"gu", "n"} },
-
-            // k
             { "ka",   new[]{"ka"} },          { "ke",   new[]{"ke"} },
             { "kai",  new[]{"ka", "i"} },     { "kei",  new[]{"ke", "i"} },
             { "kao",  new[]{"ka", "o"} },     { "kou",  new[]{"ko", "o"} },
@@ -233,8 +199,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "kuai", new[]{"ku", "a", "i"} },{ "kui",  new[]{"ku", "i"} },
             { "kuan", new[]{"ku", "a", "n"} },{ "kuang",new[]{"ku", "a", "n"} },
             { "kun",  new[]{"ku", "n"} },
-
-            // h
             { "ha",   new[]{"ha"} },          { "he",   new[]{"he"} },
             { "hai",  new[]{"ha", "i"} },     { "hei",  new[]{"he", "i"} },
             { "hao",  new[]{"ha", "o"} },     { "hou",  new[]{"ho", "o"} },
@@ -245,8 +209,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "huai", new[]{"fa", "i"} },     { "hui",  new[]{"fu", "i"} },
             { "huan", new[]{"fa", "n"} },     { "huang",new[]{"fa", "n"} },
             { "hun",  new[]{"fu", "n"} },
-
-            // j
             { "ji",   new[]{"ji"} },          { "jia",  new[]{"ja"} },
             { "jie",  new[]{"je"} },          { "jiao", new[]{"ja", "o"} },
             { "jiu",  new[]{"ju"} },          { "jian", new[]{"je", "n"} },
@@ -254,8 +216,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "jing", new[]{"ji", "n"} },     { "jiong",new[]{"jo", "n"} },
             { "ju",   new[]{"ju"} },          { "jue",  new[]{"ju", "e"} },
             { "juan", new[]{"ju", "e", "n"} },{ "jun",  new[]{"ju", "n"} },
-
-            // q
             { "qi",   new[]{"chi"} },         { "qia",  new[]{"cha"} },
             { "qie",  new[]{"che"} },         { "qiao", new[]{"cha", "o"} },
             { "qiu",  new[]{"chu"} },         { "qian", new[]{"che", "n"} },
@@ -263,8 +223,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "qing", new[]{"chi", "n"} },    { "qiong",new[]{"cho", "n"} },
             { "qu",   new[]{"chu"} },         { "que",  new[]{"chu", "e"} },
             { "quan", new[]{"chu", "e", "n"} },{ "qun", new[]{"chu", "n"} },
-
-            // x
             { "xi",   new[]{"shi"} },         { "xia",  new[]{"sha"} },
             { "xie",  new[]{"she"} },         { "xiao", new[]{"sha", "o"} },
             { "xiu",  new[]{"shu"} },         { "xian", new[]{"she", "n"} },
@@ -272,8 +230,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "xing", new[]{"shi", "n"} },    { "xiong",new[]{"sho", "n"} },
             { "xu",   new[]{"shu"} },         { "xue",  new[]{"shu", "e"} },
             { "xuan", new[]{"shu", "e", "n"} },{ "xun", new[]{"shu", "n"} },
-
-            // zh
             { "zha",  new[]{"ja"} },          { "zhe",  new[]{"je"} },
             { "zhi",  new[]{"ji"} },          { "zhai", new[]{"ja", "i"} },
             { "zhao", new[]{"ja", "o"} },     { "zhou", new[]{"jo", "o"} },
@@ -284,8 +240,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "zhuai",new[]{"ju", "a", "i"} },{ "zhui", new[]{"ju", "i"} },
             { "zhuan",new[]{"ju", "a", "n"} },{ "zhuang",new[]{"ju", "a", "n"} },
             { "zhun", new[]{"ju", "n"} },
-
-            // ch
             { "cha",  new[]{"cha"} },         { "che",  new[]{"che"} },
             { "chi",  new[]{"chi"} },         { "chai", new[]{"cha", "i"} },
             { "chao", new[]{"cha", "o"} },    { "chou", new[]{"cho", "o"} },
@@ -296,8 +250,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "chuai",new[]{"chu", "a", "i"} },{ "chui", new[]{"chu", "i"} },
             { "chuan",new[]{"chu", "a", "n"} },{ "chuang",new[]{"chu", "a", "n"} },
             { "chun", new[]{"chu", "n"} },
-
-            // sh
             { "sha",  new[]{"sha"} },         { "she",  new[]{"she"} },
             { "shi",  new[]{"shi"} },         { "shai", new[]{"sha", "i"} },
             { "shao", new[]{"sha", "o"} },    { "shou", new[]{"sho", "o"} },
@@ -307,8 +259,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "shuo", new[]{"shu", "o"} },    { "shuai",new[]{"shu", "a", "i"} },
             { "shui", new[]{"shu", "i"} },    { "shuan",new[]{"shu", "a", "n"} },
             { "shuang",new[]{"shu", "a", "n"} },{ "shun",new[]{"shu", "n"} },
-
-            // r
             { "re",   new[]{"re"} },          { "ri",   new[]{"ri"} },
             { "rao",  new[]{"ra", "o"} },     { "rou",  new[]{"ro", "o"} },
             { "ran",  new[]{"ra", "n"} },     { "ren",  new[]{"re", "n"} },
@@ -316,8 +266,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "rong", new[]{"ro", "n"} },     { "ru",   new[]{"ru"} },
             { "ruo",  new[]{"ru", "o"} },     { "rui",  new[]{"ru", "i"} },
             { "ruan", new[]{"ru", "a", "n"} },{ "run",  new[]{"ru", "n"} },
-
-            // z
             { "za",   new[]{"za"} },          { "ze",   new[]{"ze"} },
             { "zi",   new[]{"ji"} },          { "zai",  new[]{"za", "i"} },
             { "zao",  new[]{"za", "o"} },     { "zou",  new[]{"zo", "o"} },
@@ -326,8 +274,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "zong", new[]{"zo", "n"} },     { "zu",   new[]{"zu"} },
             { "zuo",  new[]{"zu", "o"} },     { "zui",  new[]{"zu", "i"} },
             { "zuan", new[]{"zu", "a", "n"} },{ "zun",  new[]{"zu", "n"} },
-
-            // c
             { "ca",   new[]{"tsa"} },         { "ce",   new[]{"tse"} },
             { "ci",   new[]{"tsu"} },         { "cai",  new[]{"tsa", "i"} },
             { "cao",  new[]{"tsa", "o"} },    { "cou",  new[]{"tso", "o"} },
@@ -336,8 +282,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "cong", new[]{"tso", "n"} },    { "cu",   new[]{"tsu"} },
             { "cuo",  new[]{"tsu", "o"} },    { "cui",  new[]{"tsu", "i"} },
             { "cuan", new[]{"tsu", "a", "n"} },{ "cun", new[]{"tsu", "n"} },
-
-            // s
             { "sa",   new[]{"sa"} },          { "se",   new[]{"se"} },
             { "si",   new[]{"su"} },          { "sai",  new[]{"sa", "i"} },
             { "sao",  new[]{"sa", "o"} },     { "sou",  new[]{"so", "o"} },
@@ -346,8 +290,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "song", new[]{"so", "n"} },     { "su",   new[]{"su"} },
             { "suo",  new[]{"su", "o"} },     { "sui",  new[]{"su", "i"} },
             { "suan", new[]{"su", "a", "n"} },{ "sun",  new[]{"su", "n"} },
-
-            // y
             { "yi",   new[]{"i"} },           { "ya",   new[]{"ya"} },
             { "ye",   new[]{"ye"} },          { "yao",  new[]{"ya", "o"} },
             { "you",  new[]{"yo", "o"} },     { "yan",  new[]{"ya", "n"} },
@@ -355,8 +297,6 @@ namespace OpenUtau.Plugin.Builtin {
             { "ying", new[]{"i", "n"} },      { "yong", new[]{"yo", "n"} },
             { "yu",   new[]{"yu"} },          { "yue",  new[]{"yu", "e"} },
             { "yuan", new[]{"e", "n"} },      { "yun",  new[]{"yu", "n"} },
-
-            // w
             { "wu",   new[]{"u"} },           { "wa",   new[]{"wa"} },
             { "wo",   new[]{"wo"} },          { "wai",  new[]{"wa", "i"} },
             { "wei",  new[]{"we", "i"} },     { "wan",  new[]{"wa", "n"} },
@@ -405,7 +345,7 @@ namespace OpenUtau.Plugin.Builtin {
 
 
         // ------------------------------------------------------------
-        // 文本处理（标点 / 数字 / 声调符号 / 长音）
+        // 文本处理
         // ------------------------------------------------------------
         internal static (string, int) ParseToneMarks(string s) {
             var sb = new StringBuilder(s.Length);
@@ -419,7 +359,6 @@ namespace OpenUtau.Plugin.Builtin {
                 }
             }
             string result = sb.ToString();
-
             if (result.Length >= 2) {
                 char last = result[^1];
                 char prev = result[^2];
@@ -443,23 +382,173 @@ namespace OpenUtau.Plugin.Builtin {
             return sb.ToString().Trim();
         }
 
+        // ------------------------------------------------------------
+        // 数字读法（v2.3.0 扩展）
+        //   日期 2024-01-15 / 2024/01/15
+        //   时间 12:30 / 12:30:45
+        //   小数 3.14 / 0.5
+        //   百分比 50% / 3.14%
+        //   千位逗号 1,000
+        // ------------------------------------------------------------
         internal static string ReplaceDigits(string s) {
             if (!s.Any(char.IsDigit)) return s;
+
             var sb = new StringBuilder();
-            var digits = new List<int>();
-            foreach (char c in s) {
-                if (char.IsDigit(c)) digits.Add(c - '0');
-                else {
-                    if (digits.Count > 0) {
-                        sb.Append(ConvertDigitSequence(digits));
-                        sb.Append(' ');
-                        digits.Clear();
-                    }
-                    sb.Append(c);
+            int i = 0;
+
+            while (i < s.Length) {
+                var dateMatch = DateRegex.Match(s, i);
+                if (dateMatch.Success && dateMatch.Index == i) {
+                    sb.Append(ReadDate(dateMatch));
+                    i += dateMatch.Length;
+                    continue;
                 }
+
+                var timeMatch = TimeRegex.Match(s, i);
+                if (timeMatch.Success && timeMatch.Index == i) {
+                    sb.Append(ReadTime(timeMatch));
+                    i += timeMatch.Length;
+                    continue;
+                }
+
+                if (char.IsDigit(s[i])) {
+                    sb.Append(ReadNumberChunk(s, ref i));
+                    continue;
+                }
+
+                sb.Append(s[i]);
+                i++;
             }
-            if (digits.Count > 0) sb.Append(ConvertDigitSequence(digits));
-            return sb.ToString();
+
+            return sb.ToString().Trim();
+        }
+
+        private static string ReadNumberChunk(string s, ref int i) {
+            int start = i;
+            while (i < s.Length && (char.IsDigit(s[i]) || s[i] == ',')) i++;
+
+            bool hasDot = false;
+            if (i + 1 < s.Length && s[i] == '.' && char.IsDigit(s[i + 1])) {
+                hasDot = true;
+                i++;
+                while (i < s.Length && char.IsDigit(s[i])) i++;
+            }
+
+            string numStr = s.Substring(start, i - start).Replace(",", "");
+
+            bool isPercent = false;
+            if (i < s.Length && s[i] == '%') {
+                isPercent = true;
+                i++;
+            }
+
+            if (hasDot) {
+                var parts = numStr.Split('.');
+                string intPart = long.TryParse(parts[0], out var ip)
+                    ? ReadCardinal(ip)
+                    : ReadDigitByDigit(parts[0]);
+                string decPart = ReadDigitByDigit(parts[1]);
+                string result = intPart + " dian " + decPart;
+                if (isPercent) result = "bai fen zhi " + result;
+                return result;
+            }
+
+            if (isPercent) {
+                if (long.TryParse(numStr, out var pct))
+                    return "bai fen zhi " + ReadCardinal(pct);
+                return "bai fen zhi " + ReadDigitByDigit(numStr);
+            }
+
+            return ConvertDigitsString(numStr);
+        }
+
+        private static string ReadDate(Match m) {
+            string full = m.Value;
+            char sep = full.Contains('-') ? '-' : '/';
+            var parts = full.Split(sep);
+            int year = int.Parse(parts[0]);
+            int month = int.Parse(parts[1]);
+            int day = int.Parse(parts[2]);
+
+            return ReadYear(year) + " nian " +
+                   ReadCardinal(month) + " yue " +
+                   ReadCardinal(day) + " ri";
+        }
+
+        private static string ReadTime(Match m) {
+            var parts = m.Value.Split(':');
+            int hour = int.Parse(parts[0]);
+            int minute = int.Parse(parts[1]);
+
+            string result = ReadCardinal(hour) + " dian";
+            if (minute > 0) result += " " + ReadCardinal(minute) + " fen";
+
+            if (parts.Length > 2) {
+                int second = int.Parse(parts[2]);
+                if (second > 0) result += " " + ReadCardinal(second) + " miao";
+            }
+            return result;
+        }
+
+        private static string ReadYear(int year) {
+            return ReadDigitByDigit(year.ToString());
+        }
+
+        private static string ReadCardinal(long num) {
+            if (num == 0) return "ling";
+            if (num < 0) return "fu " + ReadCardinal(-num);
+            if (num > 999999999999L) return ReadDigitByDigit(num.ToString());
+
+            var parts = new List<string>();
+
+            if (num >= 100000000) {
+                long yi = num / 100000000;
+                parts.Add(ReadCardinal(yi) + " yi");
+                num %= 100000000;
+                if (num > 0 && num < 10000000) parts.Add("ling");
+            }
+
+            if (num >= 10000) {
+                long wan = num / 10000;
+                parts.Add(ReadCardinal(wan) + " wan");
+                num %= 10000;
+                if (num > 0 && num < 1000) parts.Add("ling");
+            }
+
+            if (num >= 1000) {
+                long qian = num / 1000;
+                parts.Add(DigitPinyin[qian] + " qian");
+                num %= 1000;
+                if (num > 0 && num < 100) parts.Add("ling");
+            }
+
+            if (num >= 100) {
+                long bai = num / 100;
+                parts.Add(DigitPinyin[bai] + " bai");
+                num %= 100;
+                if (num > 0 && num < 10) parts.Add("ling");
+            }
+
+            if (num >= 10) {
+                long shi = num / 10;
+                if (shi > 1) parts.Add(DigitPinyin[shi]);
+                parts.Add("shi");
+                num %= 10;
+            }
+
+            if (num > 0) parts.Add(DigitPinyin[num]);
+
+            return string.Join(" ", parts);
+        }
+
+        private static string ReadDigitByDigit(string digits) {
+            return string.Join(" ",
+                digits.Where(char.IsDigit).Select(c => DigitPinyin[c - '0']));
+        }
+
+        private static string ConvertDigitsString(string digits) {
+            var list = digits.Where(char.IsDigit).Select(c => c - '0').ToList();
+            return ConvertDigitSequence(list);
         }
 
         internal static string ConvertDigitSequence(List<int> digits) {
@@ -550,9 +639,7 @@ namespace OpenUtau.Plugin.Builtin {
             string fullPinyin = rawInitial + final;
 
             if (fullPinyinMap.TryGetValue(fullPinyin, out var mapped)) {
-                foreach (var m in mapped) {
-                    moras.Add(ToKana(m));
-                }
+                foreach (var m in mapped) moras.Add(ToKana(m));
                 return moras;
             }
 
@@ -566,7 +653,6 @@ namespace OpenUtau.Plugin.Builtin {
             if (!string.IsNullOrEmpty(cons)) {
                 string firstV = vowelSeq[0];
                 vowelSeq.RemoveAt(0);
-
                 if (firstV == "N") {
                     moras.Add(ToKana(cons + "u"));
                     moras.Add("ん");
@@ -592,12 +678,10 @@ namespace OpenUtau.Plugin.Builtin {
                 case "u": return new List<string> { "u" };
                 case "v": return new List<string> { "yu" };
                 case "er": return new List<string> { "a" };
-
                 case "ai": return new List<string> { "a", "i" };
                 case "ei": return new List<string> { "e", "i" };
                 case "ao": return new List<string> { "a", "o" };
                 case "ou": return new List<string> { "o", "o" };
-
                 case "an": return new List<string> { "a", "N" };
                 case "en": return new List<string> { "e", "N" };
                 case "in": return new List<string> { "i", "N" };
@@ -614,20 +698,16 @@ namespace OpenUtau.Plugin.Builtin {
                 case "ueng": return new List<string> { "u", "e", "N" };
                 case "van": return new List<string> { "yu", "e", "N" };
                 case "vn": return new List<string> { "yu", "N" };
-
                 case "ia": return new List<string> { "i", "a" };
                 case "ie": return new List<string> { "i", "e" };
                 case "iu": return new List<string> { "i", "u" };
                 case "iao": return new List<string> { "i", "a", "o" };
-
                 case "ua": return new List<string> { "u", "a" };
                 case "uo": return new List<string> { "u", "o" };
                 case "ui": return new List<string> { "u", "i" };
                 case "uai": return new List<string> { "u", "a", "i" };
-
                 case "ue": return new List<string> { "yu", "e" };
                 case "ve": return new List<string> { "yu", "e" };
-
                 default: return new List<string> { pinyinFinal };
             }
         }

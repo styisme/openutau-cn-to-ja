@@ -1,5 +1,5 @@
 // =====================================================================
-// ChineseToJapanesePhonemizer v2.2.2
+// ChineseToJapanesePhonemizer v2.3.0
 // 让日语音源唱中文歌词的 OpenUtau 音素器
 //
 // 版本历史：
@@ -22,6 +22,7 @@
 //   v2.2.0 项目结构重组；引入测试/CI/SemVer；修复 yuan 无声 bug
 //   v2.2.1 修复安装向导版本号未同步问题
 //   v2.2.2 修复 LightToneChars 误把感叹词当轻声，导致「哦」等字无声
+//   v2.3.0 数字读法扩展：日期/时间/小数/百分比/千位逗号
 //
 // 依赖：OpenUtau v0.1.570+ / .NET 10 / YamlDotNet / Serilog
 // =====================================================================
@@ -169,7 +170,7 @@ namespace OpenUtau.Plugin.Builtin {
             this.currentSinger = singer;
             if (singer == null || !singer.Loaded) return;
 
-            Log.Information($"[ZH to JA v2.2.2] UI compatibility: {(UiCompat.Available ? "available" : "NOT available")}");
+            Log.Information($"[ZH to JA v2.3.0] UI compatibility: {(UiCompat.Available ? "available" : "NOT available")}");
 
             TryLoadConfig(Path.Combine(PluginDir, "zh2ja.yaml"));
             TryLoadConfig(Path.Combine(singer.Location, "zh2ja.yaml"));
@@ -212,7 +213,7 @@ namespace OpenUtau.Plugin.Builtin {
                 if (nasalMs > 500) nasalMs = 500;
                 useWildcard = cfg.UseWildcard;
 
-                Log.Information($"[ZH to JA v2.2.2] Loaded config from {path} (nasal_mode={nasalMode}, nasal_ms={nasalMs}, use_wildcard={useWildcard})");
+                Log.Information($"[ZH to JA v2.3.0] Loaded config from {path} (nasal_mode={nasalMode}, nasal_ms={nasalMs}, use_wildcard={useWildcard})");
             } catch (Exception e) {
                 Log.Error(e, $"Failed to load zh2ja config: {path}");
             }
