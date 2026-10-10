@@ -2,7 +2,7 @@
 
 > 让日语音源唱中文 —— OpenUtau 音素器插件
 
-[![Version](https://img.shields.io/badge/version-2.2.2-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.3.0-blue.svg)](CHANGELOG.md)
 [![CI](https://github.com/styisme/openutau-cn-to-ja/actions/workflows/ci.yml/badge.svg)](https://github.com/styisme/openutau-cn-to-ja/actions/workflows/ci.yml)
 [![Platform](https://img.shields.io/badge/platform-Windows%20x64-lightgrey.svg)](#系统要求)
 [![OpenUtau](https://img.shields.io/badge/OpenUtau-v0.1.570%2B-green.svg)](#系统要求)
@@ -151,6 +151,16 @@
 不清缓存会导致 OpenUtau 继续播放旧音素器生成的音频，**你改了参数也听不到效果**。
 
 ---
+
+## 🛠️ 配置工具（推荐）
+
+不想手写 YAML？用单文件 Web 编辑器：
+
+**打开** [`tools/zh2ja-editor.html`](tools/zh2ja-editor.html)（保存到本地后用浏览器打开，无需联网）
+
+- 可视化编辑拼音映射、多音字、别名覆盖
+- 实时预览拼音 → 音素序列
+- 支持导入 / 导出 YAML
 
 ## ⚙️ 配置（zh2ja.yaml）
 
