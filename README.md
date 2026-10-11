@@ -4,11 +4,11 @@
 
 > 让日语音源唱中文 —— OpenUtau 音素器插件
 
-[!\[Version](https://img.shields.io/badge/version-2.3.1-blue.svg)](CHANGELOG.md)
-[!\[CI](https://github.com/styisme/openutau-cn-to-ja/actions/workflows/ci.yml/badge.svg)](https://github.com/styisme/openutau-cn-to-ja/actions/workflows/ci.yml)
-[!\[Platform](https://img.shields.io/badge/platform-Windows%20x64-lightgrey.svg)](#系统要求)
-[!\[OpenUtau](https://img.shields.io/badge/OpenUtau-v0.1.570+-green.svg)](#系统要求)
-[!\[License](https://img.shields.io/badge/license-MIT-orange.svg)](#许可证)
+[![Version](https://img.shields.io/badge/version-2.3.1-blue.svg)](CHANGELOG.md)
+[![CI](https://github.com/styisme/openutau-cn-to-ja/actions/workflows/ci.yml/badge.svg)](https://github.com/styisme/openutau-cn-to-ja/actions/workflows/ci.yml)
+[![Platform](https://img.shields.io/badge/platform-Windows%20x64-lightgrey.svg)](#系统要求)
+[![OpenUtau](https://img.shields.io/badge/OpenUtau-v0.1.570%2B-green.svg)](#系统要求)
+[![License](https://img.shields.io/badge/license-MIT-orange.svg)](#许可证)
 
 一个 OpenUtau 音素器插件，让**日语音源（CV / VCV / CVVC）直接演唱中文歌词**，无需手动把汉字翻译成日语假名。
 

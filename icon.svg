@@ -1,19 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#4ec9b0"/>
-      <stop offset="1" stop-color="#2b8a78"/>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#569cd6" />
+      <stop offset="100%" stop-color="#1F3A93" />
     </linearGradient>
   </defs>
-  <!-- 圆角底 -->
-  <rect x="16" y="16" width="224" height="224" rx="48" fill="url(#bg)"/>
-  <!-- 粵 字 -->
-  <text x="128" y="172" font-family="'Noto Sans CJK SC','Microsoft YaHei',sans-serif"
-        font-size="150" font-weight="700" text-anchor="middle" fill="#ffffff">粵</text>
-  <!-- 右下小音符 -->
-  <g transform="translate(190,186)" fill="#ffe4b5">
-    <ellipse cx="0" cy="14" rx="10" ry="8"/>
-    <rect x="8" y="-14" width="3" height="28"/>
-    <path d="M8,-14 Q22,-10 22,-2 Q20,-8 11,-10 Z"/>
-  </g>
+  <!-- 圆角矩形背景 -->
+  <rect x="0" y="0" width="256" height="256" rx="56" fill="url(#bgGradient)" />
+  <!-- 音符图案 -->
+  <path d="M 160 60 L 160 160 C 160 180, 130 180, 120 170 C 110 160, 120 140, 140 140 L 140 80 L 100 90 L 100 160 C 100 180, 70 180, 60 170 C 50 160, 60 140, 80 140 L 80 80 L 160 60 Z" fill="#FFFFFF" opacity="0.2"/>
+  <!-- ZH 文字 -->
+  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="bold" font-size="96" fill="#FFFFFF">ZH</text>
 </svg>
