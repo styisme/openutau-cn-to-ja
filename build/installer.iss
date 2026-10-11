@@ -31,7 +31,7 @@ WizardStyle=modern
 PrivilegesRequired=lowest
 UninstallDisplayName={#MyAppName}
 LicenseFile=..\LICENSE
-; SetupIconFile=icon.ico
+SetupIconFile=..\icon.ico
 
 [Languages]
 Name: "chinese"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
