@@ -32,6 +32,13 @@ PrivilegesRequired=lowest
 UninstallDisplayName={#MyAppName}
 LicenseFile=..\LICENSE
 SetupIconFile=..\icon.ico
+WizardImageFile=wizard-large.bmp
+WizardSmallImageFile=wizard-small.bmp
+
+[Messages]
+WelcomeLabel1=欢迎使用 ZH to JA 音素器
+WelcomeLabel2=这个插件能让日语音源直接演唱中文。%n%n安装前请确保 OpenUtau 已完全关闭，否则插件文件会被锁定。
+FinishedLabel=安装完成！请启动 OpenUtau，在音轨设置中把音素器切换为 “ZH to JA”。
 
 [Languages]
 Name: "chinese"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
