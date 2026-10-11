@@ -223,9 +223,28 @@ namespace OpenUtau.Plugin.Builtin {
             noteTones.Clear();
             lightToneFlags.Clear();
 
-            PreprocessNotes(groups);
-            BaseChinesePhonemizer.RomanizeNotes(groups);
-            FixPolyphones(groups);
+            // 安全检查：避免空组导致 BaseChinesePhonemizer 崩溃
+            if (groups == null || groups.Length == 0) {
+                base.SetUp(groups, project, track);
+                return;
+            }
+
+            // 过滤掉空歌词的音符
+            var safeGroups = groups.Where(g => g != null && g.Length > 0 && !string.IsNullOrWhiteSpace(g[0].lyric)).ToArray();
+
+            if (safeGroups.Length == 0) {
+                base.SetUp(groups, project, track);
+                return;
+            }
+
+            try {
+                PreprocessNotes(safeGroups);
+                BaseChinesePhonemizer.RomanizeNotes(safeGroups);
+                FixPolyphones(safeGroups);
+            } catch (Exception ex) {
+                Log.Error(ex, "[ZH to JA] Error in SetUp, continuing...");
+            }
+
             base.SetUp(groups, project, track);
         }
 
