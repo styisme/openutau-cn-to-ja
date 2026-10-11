@@ -4,7 +4,7 @@
 
 > 让日语音源唱中文 —— OpenUtau 音素器插件
 
-[!\[Version](https://img.shields.io/badge/version-2.3.0-blue.svg)](CHANGELOG.md)
+[!\[Version](https://img.shields.io/badge/version-2.3.1-blue.svg)](CHANGELOG.md)
 [!\[CI](https://github.com/styisme/openutau-cn-to-ja/actions/workflows/ci.yml/badge.svg)](https://github.com/styisme/openutau-cn-to-ja/actions/workflows/ci.yml)
 [!\[Platform](https://img.shields.io/badge/platform-Windows%20x64-lightgrey.svg)](#系统要求)
 [!\[OpenUtau](https://img.shields.io/badge/OpenUtau-v0.1.570+-green.svg)](#系统要求)
@@ -53,7 +53,7 @@
 1. 从 [Releases](https://github.com/styisme/openutau-cn-to-ja/releases) 下载最新的 `MyZHtoJAPlugin-vX.Y.Z-Setup.exe`
 2. **完全关闭 OpenUtau**（任务管理器确认无 OpenUtau.exe 进程）
 3. 双击安装包，按提示下一步
-4. 安装程序会自动探测 OpenUtau 的 `Plugins\\\\\\\\` 目录
+4. 安装程序会自动探测 OpenUtau 的 `Plugins\\\\\\\\\\\\\\\\` 目录
 5. 完成后可选择自动启动 OpenUtau
 
 ### 方式二：手动安装
@@ -62,11 +62,11 @@
 2. **完全关闭 OpenUtau**
 3. 复制 DLL 到以下位置之一：
 
-`<文档目录>\\\\\\\\OpenUtau\\\\\\\\Plugins\\\\\\\\MyZHtoJAPlugin.dll`
+`<文档目录>\\\\\\\\\\\\\\\\OpenUtau\\\\\\\\\\\\\\\\Plugins\\\\\\\\\\\\\\\\MyZHtoJAPlugin.dll`
 
 或（便携版）：
 
-`<OpenUtau安装目录>\\\\\\\\Plugins\\\\\\\\MyZHtoJAPlugin.dll`
+`<OpenUtau安装目录>\\\\\\\\\\\\\\\\Plugins\\\\\\\\\\\\\\\\MyZHtoJAPlugin.dll`
 
 1. 启动 OpenUtau，在音轨设置里找到音素器 **ZH to JA**
 
@@ -147,7 +147,7 @@
 ⚠️ **更换 DLL 或修改 YAML 后必做**：
 
 1. 完全退出 OpenUtau
-2. 清空 `<文档目录>\\\\\\\\OpenUtau\\\\\\\\Cache\\\\\\\\` 里的内容
+2. 清空 `<文档目录>\\\\\\\\\\\\\\\\OpenUtau\\\\\\\\\\\\\\\\Cache\\\\\\\\\\\\\\\\` 里的内容
 3. 重新启动并渲染
 
 不清缓存会导致 OpenUtau 继续播放旧音素器生成的音频，**你改了参数也听不到效果**。
@@ -168,26 +168,26 @@
 
 插件会自动读取以下位置的 zh2ja.yaml：
 
-* `<文档目录>\\\\OpenUtau\\\\Plugins\\\\zh2ja.yaml`（全局配置）
-* `<音源目录>\\\\zh2ja.yaml`（该音源专属，优先级更高）
+* `<文档目录>\\\\\\\\OpenUtau\\\\\\\\Plugins\\\\\\\\zh2ja.yaml`（全局配置）
+* `<音源目录>\\\\\\\\zh2ja.yaml`（该音源专属，优先级更高）
 
 没有这个文件时使用内置默认值。完整示例：
 
 ```yaml
 # ===== 基础开关 =====
-nasal\\\_mode: short       # none / short / full
-nasal\\\_ms: 120           # short 模式下ん占音符末尾毫秒
-disable\\\_vcv: false      # true = 禁用 VCV 过渡
-disable\\\_light\\\_tone: false
-disable\\\_tone\\\_timing: false
-disable\\\_double\\\_char: false
-use\\\_wildcard: true      # v2.1.7 新增，启用 \\\* 过渡音素
+nasal\\\\\\\_mode: short       # none / short / full
+nasal\\\\\\\_ms: 120           # short 模式下ん占音符末尾毫秒
+disable\\\\\\\_vcv: false      # true = 禁用 VCV 过渡
+disable\\\\\\\_light\\\\\\\_tone: false
+disable\\\\\\\_tone\\\\\\\_timing: false
+disable\\\\\\\_double\\\\\\\_char: false
+use\\\\\\\_wildcard: true      # v2.1.7 新增，启用 \\\\\\\* 过渡音素
 
 # ===== 自定义完整拼音映射 =====
-# full\\\_pinyin:
-#   hua: \\\[fa]
-#   chi: \\\[chi]
-#   an: \\\[a]          # 例：让安不带鼻音
+# full\\\\\\\_pinyin:
+#   hua: \\\\\\\[fa]
+#   chi: \\\\\\\[chi]
+#   an: \\\\\\\[a]          # 例：让安不带鼻音
 
 # ===== 多音字修正 =====
 # polyphones:
@@ -195,8 +195,8 @@ use\\\_wildcard: true      # v2.1.7 新增，启用 \\\* 过渡音素
 #   "le qu": "yue qu"          # 乐趣
 
 # ===== 别名覆盖（弱音源用短别名）=====
-# alias\\\_overrides:
-#   "ん": \\\["ん -", "n -", "n"]
+# alias\\\\\\\_overrides:
+#   "ん": \\\\\\\["ん -", "n -", "n"]
 ```
 
 \---
@@ -263,7 +263,7 @@ OpenUtau 的**缓存机制**。必须：
 </details>
 
 <details>
-<summary><b>Q7：通配符 \\\* 过渡音素是什么？</b></summary>
+<summary><b>Q7：通配符 \\\\\\\* 过渡音素是什么？</b></summary>
 
 v2.1.7 新增功能。对于 Defoko 等纯 CV 音源，插件会自动优先查找带 \* 的过渡采样（如 ざ\*、\* お），让音节之间衔接更自然。如果音源没有这些采样，会自动回退。可通过 use\_wildcard: false 关闭。
 
@@ -277,7 +277,9 @@ v2.1.7 新增功能。对于 Defoko 等纯 CV 音源，插件会自动优先查�
 
 |版本|主要改动|
 |-|-|
-|**v2.2.2**|修复 LightToneChars 误把感叹词当轻声，导致「哦」等字无声|
+|**v2.3.1**|安装程序界面美化（向导图片、自定义文案）；添加安装包图标；修复 SetUp 崩溃及 zho 拼音兜底|
+|v2.3.0|数字读法扩展（日期/时间/小数/百分比/千位逗号）；新增单文件 Web 配置编辑器|
+|v2.2.2|修复 LightToneChars 误把感叹词当轻声，导致「哦」等字无声|
 |v2.2.1|修复安装向导版本号未同步|
 |v2.2.0|项目结构重组（src/build/docs/tests）；引入单元测试与 CI；修复 yuan 无声|
 |**v2.1.7**|加入通配符 \* 过渡音素支持（Defoko 等 CV 音源），可通过 use\_wildcard 开关控制|
@@ -294,7 +296,7 @@ v2.1.7 新增功能。对于 Defoko 等纯 CV 音源，插件会自动优先查�
 |v1.1|完整拼音优先 + 多音节输入|
 |**v1.0**|首版：拼音 → 假名|
 
-> 历史版本号未严格遵循 SemVer，自 v2.2.0 起严格执行 \\\[SemVer 2.0.0](https://semver.org/lang/zh-CN/)。
+> 历史版本号未严格遵循 SemVer，自 v2.2.0 起严格执行 \\\\\\\[SemVer 2.0.0](https://semver.org/lang/zh-CN/)。
 
 \---
 
@@ -327,10 +329,10 @@ openutau-cn-to-ja/
 
 ```powershell
 # 首次：拉取编译依赖（OpenUtau 官方 Release + NuGet，约 160MB）
-powershell -ExecutionPolicy Bypass -File build\\\\fetch-deps.ps1
+powershell -ExecutionPolicy Bypass -File build\\\\\\\\fetch-deps.ps1
 
 # 编译
-powershell -ExecutionPolicy Bypass -File build\\\\build.ps1
+powershell -ExecutionPolicy Bypass -File build\\\\\\\\build.ps1
 
 # 单元测试
 dotnet test openutau-cn-to-ja.slnx
@@ -345,7 +347,7 @@ dotnet test openutau-cn-to-ja.slnx
 需要预先安装 [Inno Setup 6](https://jrsoftware.org/isdl.php)：
 
 ```powershell
-\\\& "${env:ProgramFiles(x86)}\\\\Inno Setup 6\\\\ISCC.exe" build\\\\installer.iss
+\\\\\\\& "${env:ProgramFiles(x86)}\\\\\\\\Inno Setup 6\\\\\\\\ISCC.exe" build\\\\\\\\installer.iss
 ```
 
 输出位于 `build/dist/`。
